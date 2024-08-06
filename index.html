@@ -58,9 +58,9 @@
         async function loadData() {
             try {
                 const [wordsResponse, phrasesResponse, imagesResponse] = await Promise.all([
-                    fetch('words.json'),
-                    fetch('phrases.json'),
-                    fetch('images.json')
+                    fetch('https://your-username.github.io/your-repo/words.json'),
+                    fetch('https://your-username.github.io/your-repo/phrases.json'),
+                    fetch('https://your-username.github.io/your-repo/images.json')
                 ]);
 
                 const words = await wordsResponse.json();
@@ -70,6 +70,7 @@
                 return { words, phrases, images };
             } catch (error) {
                 console.error('Error loading data:', error);
+                document.getElementById('app').innerHTML = '<h2>Ошибка при загрузке данных.</h2>';
                 return { words: [], phrases: {}, images: {} };
             }
         }
