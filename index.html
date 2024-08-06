@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Aprender Español</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin: 20px;
+        }
+        .word-container {
+            margin-bottom: 20px;
+        }
+        .options {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        .option-button {
+            margin: 5px;
+            padding: 10px;
+            font-size: 16px;
+            cursor: pointer;
+            border: none;
+            border-radius: 8px;
+            background-color: #007bff;
+            color: white;
+            width: 200px;
+            transition: background-color 0.3s;
+        }
+        .option-button:hover {
+            background-color: #0056b3;
+        }
+        .result {
+            font-size: 18px;
+            margin-top: 20px;
+        }
+        .counter {
+            font-size: 16px;
+        }
+        .image-container {
+            display: none;
+            margin-top: 20px;
+        }
+        .image-container img {
+            max-width: 100px;
+            max-height: 100px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Aprender Español</h1>
+    <div id="app">Cargando...</div>
+
+    <script>
+        let words = [];
+        let phrases = {};
+        let images = {};
+        let currentWord = '';
+        let correctAnswers = {};
+
+        async function loadData() {
+            try {
+                const [wordsResponse, phrasesResponse, imagesResponse] = await Promise.all([
+                    fetch('words.json'),
+                    fetch('phrases.json'),
+                    fetch('images.json')
+                ]);
+
+                words = await wordsResponse.json();
+                phrases = await phrasesResponse.json();
+                images = await imagesResponse.json();
+
+                words.forEach(([word]) => correctAnswers[word] = 0);
+
+                showRandomWord();
+            } catch (error) {
+                document.getElementById('app').innerText = 'Ошибка при загрузке данных.';
+                console.error('Error loading data:', error);
+            }
+        }
+
+        function showRandomWord() {
+            if (Object.values(correctAnswers).every(count => count >= 5)) {
+                document.getElementById('app').innerHTML = '<h2>¡Has completado todas las palabras!</h2>';
+                return;
+            }
+
+            const eligibleWords = words.filter(([word]) => correctAnswers[word] < 5);
+            const randomIndex = Math.floor(Math.random() * eligibleWords.length);
+            const [word, translation] = eligibleWords[randomIndex];
+            currentWord = word;
+
+            const options = [...words.map(([_, translation]) => translation)];
+            options.sort(() => Math.random() - 0.5);
+
+            if (!options.includes(translation)) {
+                const replaceIndex = Math.floor(Math.random() * options.length);
+                options[replaceIndex] = translation;
+            }
+
+            renderWord(word, options);
+        }
+
+        function renderWord(word, options) {
+            document.getElementById('app').innerHTML = `
+                <div class="word-container">
+                    <h2>${word}</h2>
+                </div>
+                <div class="options">
+                    ${options.map(option => `<button class="option-button" onclick="checkAnswer('${option}')">${option}</button>`).join('')}
+                </div>
+                <div class="result" id="result"></div>
+                <div class="counter" id="counter">Correctas: ${correctAnswers[word]} / 5</div>
+                <div class="image-container" id="image-container">
+                    <img id="word-image" src="" alt="${word}">
+                </div>
+            `;
+        }
+
+        window.checkAnswer = function(answer) {
+            const resultElement = document.getElementById('result');
+            const imageContainer = document.getElementById('image-container');
+            const image = document.getElementById('word-image');
+            if (answer === words.find(([word, translation]) => word === currentWord)[1]) {
+                correctAnswers[currentWord]++;
+                if (correctAnswers[currentWord] >= 5) {
+                    document.getElementById('app').innerHTML = `
+                        <div class="word-container">
+                            <h2>${currentWord}</h2>
+                            <p>${phrases[currentWord]}</p>
+                            <img src="${images[currentWord]}" alt="${currentWord}" style="max-width: 100px; max-height: 100px;">
+                        </div>
+                    `;
+                    setTimeout(showRandomWord, 3000);
+                } else {
+                    image.src = images[currentWord];
+                    imageContainer.style.display = 'block';
+                    setTimeout(() => {
+                        imageContainer.style.display = 'none';
+                        showRandomWord();
+                    }, 3000);
+                }
+            } else {
+                correctAnswers[currentWord] = 0;
+                resultElement.innerText = `Incorrecto. La respuesta correcta es "${words.find(([word, translation]) => word === currentWord)[1]}".`;
+                setTimeout(showRandomWord, 2000);
+            }
+            document.getElementById('counter').innerText = `Correctas: ${correctAnswers[currentWord]} / 5`;
+        }
+
+        loadData();
+    </script>
+</body>
+</html>
