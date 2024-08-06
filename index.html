@@ -20,18 +20,20 @@
         }
         .option-button {
             margin: 5px;
-            padding: 10px;
+            padding: 20px;
             font-size: 16px;
             cursor: pointer;
             border: none;
             border-radius: 8px;
             width: 200px;
-            height: 100px;
+            height: 200px;
             background-size: cover;
             background-position: center;
-            background-image: url('https://natawe4ka.github.io/aprender-espanol/cactus.png');
+            background-color: #007bff;
             color: white;
-            transition: background-color 0.3s;
+            transition: opacity 0.3s;
+            mask: url('https://upload.wikimedia.org/wikipedia/commons/e/ec/Cactus.svg') no-repeat center / contain;
+            -webkit-mask: url('https://upload.wikimedia.org/wikipedia/commons/e/ec/Cactus.svg') no-repeat center / contain;
         }
         .option-button:hover {
             opacity: 0.8;
