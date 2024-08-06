@@ -58,9 +58,9 @@
         async function loadData() {
             try {
                 const [wordsResponse, phrasesResponse, imagesResponse] = await Promise.all([
-                    fetch('https://your-username.github.io/your-repo/words.json'),
-                    fetch('https://your-username.github.io/your-repo/phrases.json'),
-                    fetch('https://your-username.github.io/your-repo/images.json')
+                    fetch('https://natawe4ka.github.io/aprender-espanol/words.json'),
+                    fetch('https://natawe4ka.github.io/aprender-espanol/phrases.json'),
+                    fetch('https://natawe4ka.github.io/aprender-espanol/images.json')
                 ]);
 
                 const words = await wordsResponse.json();
@@ -140,12 +140,8 @@
                         `;
                         setTimeout(showRandomWord, 3000);
                     } else {
-                        image.src = images[currentWord];
-                        imageContainer.style.display = 'block';
-                        setTimeout(() => {
-                            imageContainer.style.display = 'none';
-                            showRandomWord();
-                        }, 3000);
+                        resultElement.innerText = '¡Correcto!';
+                        setTimeout(showRandomWord, 1000);
                     }
                 } else {
                     correctAnswers[currentWord] = 0;
