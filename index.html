@@ -140,8 +140,12 @@
                         `;
                         setTimeout(showRandomWord, 3000);
                     } else {
-                        resultElement.innerText = '¡Correcto!';
-                        setTimeout(showRandomWord, 1000);
+                        image.src = images[currentWord];
+                        imageContainer.style.display = 'block';
+                        setTimeout(() => {
+                            imageContainer.style.display = 'none';
+                            showRandomWord();
+                        }, 3000);
                     }
                 } else {
                     correctAnswers[currentWord] = 0;
